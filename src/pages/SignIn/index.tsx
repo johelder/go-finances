@@ -36,7 +36,7 @@ export const SignIn = () => {
       <S.Footer>
         <S.FooterWrapper>
           <SignInSocialButton title="Entrar com Google" svg={GoogleSvg} onPress={handleSignWithGoogle} />
-          <SignInSocialButton title="Entrar com Apple" svg={AppleSvg} />
+          <SignInSocialButton title="Entrar com Apple" svg={AppleSvg} onPress={() => Alert.alert('Em construção...')} />
         </S.FooterWrapper>
       </S.Footer>
     </S.Container>
