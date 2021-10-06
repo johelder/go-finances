@@ -7,6 +7,8 @@ import {RFValue} from 'react-native-responsive-fontsize';
 import {addMonths, subMonths, format} from 'date-fns';
 import {ptBR} from 'date-fns/locale';
 
+import {useAuth} from '../../hooks/auth';
+
 import {categories} from '../../utils/categories';
 
 import {Header} from '../../components/Header';
@@ -40,6 +42,7 @@ export const Resume = () => {
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const theme = useTheme();
+  const {user} = useAuth();
 
   function handleChangeDate(action: 'prev' | 'next') {
     if (action === 'prev') {
@@ -51,7 +54,7 @@ export const Resume = () => {
 
   const loadData = useCallback(async () => {
     setIsLoading(true);
-    const dataKey = '@gofinances:transactions';
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
     const response = await AsyncStorage.getItem(dataKey);
     const responseFormatted = response ? JSON.parse(response) : [];
 

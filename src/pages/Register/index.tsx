@@ -6,6 +6,8 @@ import {yupResolver} from '@hookform/resolvers/yup';
 import * as yup from 'yup';
 import uuid from 'react-native-uuid';
 
+import {useAuth} from '../../hooks/auth';
+
 import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
 import {RootStackParamList} from '../../routes/app.routes';
 
@@ -51,6 +53,8 @@ export const Register = ({navigation}: Props) => {
     resolver: yupResolver(schema),
   });
 
+  const {user} = useAuth();
+
   function handleActiveTransactionType(type: 'positive' | 'negative') {
     setActiveTransactionType(type);
   }
@@ -82,7 +86,7 @@ export const Register = ({navigation}: Props) => {
     };
 
     try {
-      const dataKey = '@gofinances:transactions';
+      const dataKey = `@gofinances:transactions_user:${user.id}`;
       const data = await AsyncStorage.getItem(dataKey);
       const currentData = data ? JSON.parse(data) : [];
       const formattedData = [...currentData, newTransaction];
