@@ -4,6 +4,7 @@ import {useFocusEffect} from '@react-navigation/core';
 import AsyncStorage from '@react-native-async-storage/async-storage';
 
 import {BorderlessButton} from 'react-native-gesture-handler';
+import { useAuth } from '../../hooks/auth';
 
 import {HighlightCard} from '../../components/HighlightCard';
 import {
@@ -37,17 +38,21 @@ export const Dashboard = () => {
   const [isLoading, setIsLoading] = useState(true);
 
   const theme = useTheme();
+  const {SignOut, user} = useAuth();
 
   function getLastTransaction(
     collection: TransactionListProps[],
     type: 'positive' | 'negative',
   ) {
+
+    const transactionsFilttered = collection.filter(transaction => transaction.type === type);
+
+    if(transactionsFilttered.length === 0) return 0;
+
     const lastTransaction = new Date(
       Math.max.apply(
         Math,
-        collection
-          .filter(transaction => transaction.type === type)
-          .map(transaction => new Date(transaction.date).getTime()),
+        transactionsFilttered.map(transaction => new Date(transaction.date).getTime()),
       ),
     );
 
@@ -60,7 +65,7 @@ export const Dashboard = () => {
   }
 
   const loadTransactions = useCallback(async () => {
-    const dataKey = '@gofinances:transactions';
+    const dataKey = `@gofinances:transactions_user:${user.id}`;
     const response = await AsyncStorage.getItem(dataKey);
     const transactions = response ? JSON.parse(response) : [];
 
@@ -106,7 +111,7 @@ export const Dashboard = () => {
       transactions,
       'negative',
     );
-    const totalInterval = `01 à ${lastEntriesTransaction}`;
+    const totalInterval = lastEntriesTransaction === 0 ? 'Não há transações' : `01 à ${lastEntriesTransaction}`;
 
     setHighlightData({
       entries: {
@@ -114,7 +119,7 @@ export const Dashboard = () => {
           style: 'currency',
           currency: 'BRL',
         }),
-        lastTransaction: lastEntriesTransaction,
+        lastTransaction: lastEntriesTransaction === 0 ? 'Não há transacões' : `Última entrada dia ${lastEntriesTransaction}`,
       },
 
       spendings: {
@@ -122,7 +127,7 @@ export const Dashboard = () => {
           style: 'currency',
           currency: 'BRL',
         }),
-        lastTransaction: lastSpendingsTransaction,
+        lastTransaction: lastSpendingsTransaction === 0 ? 'Não há transacões' : `Última entrada dia ${lastSpendingsTransaction}`,
       },
 
       total: {
@@ -157,15 +162,15 @@ export const Dashboard = () => {
           <S.Header>
             <S.UserWrapper>
               <S.UserInfo>
-                <S.Photo source={{uri: 'https://github.com/johelder.png'}} />
+                <S.Photo source={{uri: user.photo}} />
 
                 <S.User>
                   <S.UserGreetings>Olá,</S.UserGreetings>
-                  <S.UserName>Johelder</S.UserName>
+                  <S.UserName>{user.name}</S.UserName>
                 </S.User>
               </S.UserInfo>
 
-              <BorderlessButton onPress={() => {}}>
+              <BorderlessButton onPress={SignOut}>
                 <S.Icon name="power" />
               </BorderlessButton>
             </S.UserWrapper>
@@ -176,14 +181,14 @@ export const Dashboard = () => {
               type="up"
               title="Entradas"
               amount={HighlightData.entries.amount}
-              lastTransaction={`Última entrada dia ${HighlightData.entries.lastTransaction}`}
+              lastTransaction={HighlightData.entries.lastTransaction}
             />
 
             <HighlightCard
               type="down"
               title="Saídas"
               amount={HighlightData.spendings.amount}
-              lastTransaction={`Última saída dia ${HighlightData.spendings.lastTransaction}`}
+              lastTransaction={HighlightData.spendings.lastTransaction}
             />
 
             <HighlightCard
