@@ -1,61 +1,61 @@
-import React, {useState} from 'react';
-import {Alert, Keyboard, Modal, TouchableWithoutFeedback} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
-import {useForm} from 'react-hook-form';
-import {yupResolver} from '@hookform/resolvers/yup';
-import * as yup from 'yup';
-import uuid from 'react-native-uuid';
+import React, { useState } from "react";
+import { Alert, Keyboard, Modal, TouchableWithoutFeedback } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
+import { useForm } from "react-hook-form";
+import { yupResolver } from "@hookform/resolvers/yup";
+import * as yup from "yup";
+import uuid from "react-native-uuid";
 
-import {useAuth} from '../../hooks/auth';
+import { useAuth } from "../../hooks/auth";
 
-import {BottomTabScreenProps} from '@react-navigation/bottom-tabs';
-import {RootStackParamList} from '../../routes/app.routes';
+import { BottomTabScreenProps } from "@react-navigation/bottom-tabs";
+import { RootStackParamList } from "../../routes/app.routes";
 
-import {Button} from '../../components/Form/Button';
-import {CategorySelectButton} from '../../components/Form/CategorySelectButton';
-import {TransactionTypeButton} from '../../components/Form/TransactionTypeButton';
-import {Header} from '../../components/Header';
-import {CategorySelect} from '../CategorySelect';
-import {InputForm} from '../../components/InputForm';
+import { Button } from "../../components/Form/Button";
+import { CategorySelectButton } from "../../components/Form/CategorySelectButton";
+import { TransactionTypeButton } from "../../components/Form/TransactionTypeButton";
+import { Header } from "../../components/Header";
+import { CategorySelect } from "../CategorySelect";
+import { InputForm } from "../../components/InputForm";
 
-import * as S from './styles';
+import * as S from "./styles";
 
 interface FormData {
   name: string;
   amount: string;
 }
 
-type Props = BottomTabScreenProps<RootStackParamList, 'Listagem'>;
+type Props = BottomTabScreenProps<RootStackParamList, "Listagem">;
 
 const schema = yup.object().shape({
-  name: yup.string().required('Nome obrigatório'),
+  name: yup.string().required("Nome obrigatório"),
   amount: yup
     .number()
-    .positive('Número precisa ser positivo')
-    .typeError('Informe um valor númerico')
-    .required('Valor obrigatório'),
+    .positive("Número precisa ser positivo")
+    .typeError("Informe um valor númerico")
+    .required("Valor obrigatório"),
 });
 
-export const Register = ({navigation}: Props) => {
-  const [activeTransactionType, setActiveTransactionType] = useState('');
+export const Register = ({ navigation }: Props) => {
+  const [activeTransactionType, setActiveTransactionType] = useState("");
   const [categoryModalOpen, setCategoryModalOpen] = useState(false);
   const [category, setCategory] = useState({
-    key: 'category',
-    name: 'Categoria',
+    key: "category",
+    name: "Categoria",
   });
 
   const {
     control,
     handleSubmit,
     reset,
-    formState: {errors},
+    formState: { errors },
   } = useForm({
     resolver: yupResolver(schema),
   });
 
-  const {user} = useAuth();
+  const { user } = useAuth();
 
-  function handleActiveTransactionType(type: 'positive' | 'negative') {
+  function handleActiveTransactionType(type: "positive" | "negative") {
     setActiveTransactionType(type);
   }
 
@@ -69,11 +69,11 @@ export const Register = ({navigation}: Props) => {
 
   async function handleRegisterTransaction(form: FormData) {
     if (!activeTransactionType) {
-      return Alert.alert('Selecione um tipo de transação.');
+      return Alert.alert("Selecione um tipo de transação.");
     }
 
-    if (category.key === 'category') {
-      return Alert.alert('Selecione uma categoria.');
+    if (category.key === "category") {
+      return Alert.alert("Selecione uma categoria.");
     }
 
     const newTransaction = {
@@ -94,15 +94,15 @@ export const Register = ({navigation}: Props) => {
       await AsyncStorage.setItem(dataKey, JSON.stringify(formattedData));
 
       reset();
-      setActiveTransactionType('');
+      setActiveTransactionType("");
       setCategory({
-        key: 'category',
-        name: 'Categoria',
+        key: "category",
+        name: "Categoria",
       });
 
-      navigation.navigate('Listagem');
+      navigation.navigate("Listagem");
     } catch (error) {
-      Alert.alert('Não foi possível salvar a transação.');
+      Alert.alert("Não foi possível salvar a transação.");
     }
   }
 
@@ -133,15 +133,15 @@ export const Register = ({navigation}: Props) => {
               <TransactionTypeButton
                 type="up"
                 title="Income"
-                onPress={() => handleActiveTransactionType('positive')}
-                isActive={activeTransactionType === 'positive'}
+                onPress={() => handleActiveTransactionType("positive")}
+                isActive={activeTransactionType === "positive"}
               />
 
               <TransactionTypeButton
                 type="down"
                 title="Outcome"
-                onPress={() => handleActiveTransactionType('negative')}
-                isActive={activeTransactionType === 'negative'}
+                onPress={() => handleActiveTransactionType("negative")}
+                isActive={activeTransactionType === "negative"}
               />
             </S.TransactionsTypes>
 

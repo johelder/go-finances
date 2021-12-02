@@ -1,25 +1,25 @@
-import React, {useCallback, useState} from 'react';
-import {ActivityIndicator} from 'react-native';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useCallback, useState } from "react";
+import { ActivityIndicator } from "react-native";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import {VictoryPie} from 'victory-native';
-import {RFValue} from 'react-native-responsive-fontsize';
-import {addMonths, subMonths, format} from 'date-fns';
-import {ptBR} from 'date-fns/locale';
+import { VictoryPie } from "victory-native";
+import { RFValue } from "react-native-responsive-fontsize";
+import { addMonths, subMonths, format } from "date-fns";
+import { ptBR } from "date-fns/locale";
 
-import {useAuth} from '../../hooks/auth';
+import { useAuth } from "../../hooks/auth";
 
-import {categories} from '../../utils/categories';
+import { categories } from "../../utils/categories";
 
-import {Header} from '../../components/Header';
-import {HistoryCard} from '../../components/HistoryCard';
+import { Header } from "../../components/Header";
+import { HistoryCard } from "../../components/HistoryCard";
 
-import {useTheme} from 'styled-components';
-import * as S from './styles';
-import {useFocusEffect} from '@react-navigation/core';
+import { useTheme } from "styled-components";
+import * as S from "./styles";
+import { useFocusEffect } from "@react-navigation/core";
 
 interface TransactionsProps {
-  type: 'positive' | 'negative';
+  type: "positive" | "negative";
   name: string;
   amount: string;
   category: string;
@@ -42,10 +42,10 @@ export const Resume = () => {
   >([]);
   const [isLoading, setIsLoading] = useState(true);
   const theme = useTheme();
-  const {user} = useAuth();
+  const { user } = useAuth();
 
-  function handleChangeDate(action: 'prev' | 'next') {
-    if (action === 'prev') {
+  function handleChangeDate(action: "prev" | "next") {
+    if (action === "prev") {
       setSelectedDate(subMonths(selectedDate, 1));
     } else {
       setSelectedDate(addMonths(selectedDate, 1));
@@ -60,20 +60,20 @@ export const Resume = () => {
 
     const spendings = responseFormatted.filter(
       (transaction: TransactionsProps) =>
-        transaction.type === 'negative' &&
+        transaction.type === "negative" &&
         new Date(transaction.date).getMonth() === selectedDate.getMonth() &&
-        new Date(transaction.date).getFullYear() === selectedDate.getFullYear(),
+        new Date(transaction.date).getFullYear() === selectedDate.getFullYear()
     );
 
     const totalSpendings = spendings.reduce(
       (acc: number, spending: TransactionsProps) =>
         acc + Number(spending.amount),
-      0,
+      0
     );
 
     const totalByCategories: TotalByCategoryProps[] = [];
 
-    categories.forEach(category => {
+    categories.forEach((category) => {
       let totalByCategorySum = 0;
 
       spendings.forEach((transaction: TransactionsProps) => {
@@ -88,9 +88,9 @@ export const Resume = () => {
           100
         ).toFixed(0)}%`;
 
-        const totalFormatted = totalByCategorySum.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
+        const totalFormatted = totalByCategorySum.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
         });
 
         totalByCategories.push({
@@ -111,7 +111,7 @@ export const Resume = () => {
   useFocusEffect(
     useCallback(() => {
       loadData();
-    }, [loadData]),
+    }, [loadData])
   );
 
   return (
@@ -125,15 +125,15 @@ export const Resume = () => {
       ) : (
         <S.Content>
           <S.SelectMonth>
-            <S.SelectMonthButton onPress={() => handleChangeDate('prev')}>
+            <S.SelectMonthButton onPress={() => handleChangeDate("prev")}>
               <S.SelectMonthIcon name="chevron-left" />
             </S.SelectMonthButton>
 
             <S.Month>
-              {format(selectedDate, 'MMMM, yyyy', {locale: ptBR})}
+              {format(selectedDate, "MMMM, yyyy", { locale: ptBR })}
             </S.Month>
 
-            <S.SelectMonthButton onPress={() => handleChangeDate('next')}>
+            <S.SelectMonthButton onPress={() => handleChangeDate("next")}>
               <S.SelectMonthIcon name="chevron-right" />
             </S.SelectMonthButton>
           </S.SelectMonth>
@@ -143,11 +143,11 @@ export const Resume = () => {
               data={totalByCategory}
               x="percent"
               y="total"
-              colorScale={totalByCategory.map(category => category.color)}
+              colorScale={totalByCategory.map((category) => category.color)}
               style={{
                 labels: {
                   fontSize: RFValue(18),
-                  fontWeight: 'bold',
+                  fontWeight: "bold",
                   fill: theme.colors.shape,
                 },
               }}
@@ -155,7 +155,7 @@ export const Resume = () => {
             />
           </S.ChartContent>
 
-          {totalByCategory.map(item => (
+          {totalByCategory.map((item) => (
             <HistoryCard
               key={item.key}
               title={item.name}

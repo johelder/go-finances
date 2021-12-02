@@ -1,12 +1,12 @@
-import React from 'react';
-import {FlatList} from 'react-native';
+import React from "react";
+import { FlatList } from "react-native";
 
-import {categories} from '../../utils/categories';
+import { categories } from "../../utils/categories";
 
-import {Header} from '../../components/Header';
-import {Button} from '../../components/Form/Button';
+import { Header } from "../../components/Header";
+import { Button } from "../../components/Form/Button";
 
-import * as S from './styles';
+import * as S from "./styles";
 
 interface Category {
   key: string;
@@ -34,11 +34,12 @@ export const CategorySelect = ({
 
       <FlatList
         data={categories}
-        keyExtractor={item => item.key}
-        renderItem={({item}) => (
+        keyExtractor={(item) => item.key}
+        renderItem={({ item }) => (
           <S.Category
             onPress={() => handleSetCategory(item)}
-            isActive={category.key === item.key}>
+            isActive={category.key === item.key}
+          >
             <S.Icon name={item.icon} />
             <S.Name>{item.name}</S.Name>
           </S.Category>

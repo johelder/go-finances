@@ -1,19 +1,19 @@
-import React, {useCallback, useEffect, useState} from 'react';
-import {ActivityIndicator} from 'react-native';
-import {useFocusEffect} from '@react-navigation/core';
-import AsyncStorage from '@react-native-async-storage/async-storage';
+import React, { useCallback, useEffect, useState } from "react";
+import { ActivityIndicator } from "react-native";
+import { useFocusEffect } from "@react-navigation/core";
+import AsyncStorage from "@react-native-async-storage/async-storage";
 
-import {BorderlessButton} from 'react-native-gesture-handler';
-import { useAuth } from '../../hooks/auth';
+import { BorderlessButton } from "react-native-gesture-handler";
+import { useAuth } from "../../hooks/auth";
 
-import {HighlightCard} from '../../components/HighlightCard';
+import { HighlightCard } from "../../components/HighlightCard";
 import {
   TransactionCard,
   TransactionCardProps,
-} from '../../components/TransactionCard';
+} from "../../components/TransactionCard";
 
-import {useTheme} from 'styled-components';
-import * as S from './styles';
+import { useTheme } from "styled-components";
+import * as S from "./styles";
 
 export interface TransactionListProps extends TransactionCardProps {
   id: string;
@@ -33,34 +33,37 @@ interface HighlightData {
 export const Dashboard = () => {
   const [data, setData] = useState<TransactionListProps[]>([]);
   const [HighlightData, setHighlightData] = useState<HighlightData>(
-    {} as HighlightData,
+    {} as HighlightData
   );
   const [isLoading, setIsLoading] = useState(true);
 
   const theme = useTheme();
-  const {SignOut, user} = useAuth();
+  const { SignOut, user } = useAuth();
 
   function getLastTransaction(
     collection: TransactionListProps[],
-    type: 'positive' | 'negative',
+    type: "positive" | "negative"
   ) {
+    const transactionsFilttered = collection.filter(
+      (transaction) => transaction.type === type
+    );
 
-    const transactionsFilttered = collection.filter(transaction => transaction.type === type);
-
-    if(transactionsFilttered.length === 0) return 0;
+    if (transactionsFilttered.length === 0) return 0;
 
     const lastTransaction = new Date(
       Math.max.apply(
         Math,
-        transactionsFilttered.map(transaction => new Date(transaction.date).getTime()),
-      ),
+        transactionsFilttered.map((transaction) =>
+          new Date(transaction.date).getTime()
+        )
+      )
     );
 
     return `${lastTransaction.getDate()} de ${lastTransaction.toLocaleString(
-      'pt-BR',
+      "pt-BR",
       {
-        month: 'long',
-      },
+        month: "long",
+      }
     )}`;
   }
 
@@ -74,21 +77,21 @@ export const Dashboard = () => {
 
     const transactionsFormatted: TransactionListProps[] = transactions.map(
       (item: TransactionListProps) => {
-        if (item.type === 'positive') {
+        if (item.type === "positive") {
           entriesTotal += Number(item.amount);
         } else {
           spendingsTotal += Number(item.amount);
         }
 
-        const amount = Number(item.amount).toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
+        const amount = Number(item.amount).toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
         });
 
-        const date = new Intl.DateTimeFormat('pt-BR', {
-          day: '2-digit',
-          month: '2-digit',
-          year: '2-digit',
+        const date = new Intl.DateTimeFormat("pt-BR", {
+          day: "2-digit",
+          month: "2-digit",
+          year: "2-digit",
         }).format(new Date(item.date));
 
         return {
@@ -99,41 +102,50 @@ export const Dashboard = () => {
           category: item.category,
           date,
         };
-      },
+      }
     );
 
     const total = entriesTotal - spendingsTotal;
 
     setData(transactionsFormatted);
 
-    const lastEntriesTransaction = getLastTransaction(transactions, 'positive');
+    const lastEntriesTransaction = getLastTransaction(transactions, "positive");
     const lastSpendingsTransaction = getLastTransaction(
       transactions,
-      'negative',
+      "negative"
     );
-    const totalInterval = lastEntriesTransaction === 0 ? 'Não há transações' : `01 à ${lastEntriesTransaction}`;
+    const totalInterval =
+      lastEntriesTransaction === 0
+        ? "Não há transações"
+        : `01 à ${lastEntriesTransaction}`;
 
     setHighlightData({
       entries: {
-        amount: entriesTotal.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
+        amount: entriesTotal.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
         }),
-        lastTransaction: lastEntriesTransaction === 0 ? 'Não há transacões' : `Última entrada dia ${lastEntriesTransaction}`,
+        lastTransaction:
+          lastEntriesTransaction === 0
+            ? "Não há transacões"
+            : `Última entrada dia ${lastEntriesTransaction}`,
       },
 
       spendings: {
-        amount: spendingsTotal.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
+        amount: spendingsTotal.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
         }),
-        lastTransaction: lastSpendingsTransaction === 0 ? 'Não há transacões' : `Última entrada dia ${lastSpendingsTransaction}`,
+        lastTransaction:
+          lastSpendingsTransaction === 0
+            ? "Não há transacões"
+            : `Última entrada dia ${lastSpendingsTransaction}`,
       },
 
       total: {
-        amount: total.toLocaleString('pt-BR', {
-          style: 'currency',
-          currency: 'BRL',
+        amount: total.toLocaleString("pt-BR", {
+          style: "currency",
+          currency: "BRL",
         }),
         lastTransaction: totalInterval,
       },
@@ -148,7 +160,7 @@ export const Dashboard = () => {
   useFocusEffect(
     useCallback(() => {
       loadTransactions();
-    }, [loadTransactions]),
+    }, [loadTransactions])
   );
 
   return (
@@ -162,7 +174,7 @@ export const Dashboard = () => {
           <S.Header>
             <S.UserWrapper>
               <S.UserInfo>
-                <S.Photo source={{uri: user.photo}} />
+                <S.Photo source={{ uri: user.photo }} />
 
                 <S.User>
                   <S.UserGreetings>Olá,</S.UserGreetings>
@@ -204,7 +216,7 @@ export const Dashboard = () => {
 
             <S.TransactionList
               data={data}
-              renderItem={({item}) => <TransactionCard data={item} />}
+              renderItem={({ item }) => <TransactionCard data={item} />}
             />
           </S.Transactions>
         </>

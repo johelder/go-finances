@@ -1,17 +1,17 @@
-import React from 'react';
-import {TouchableOpacityProps} from 'react-native';
+import React from "react";
+import { TouchableOpacityProps } from "react-native";
 
-import * as S from './styles';
+import * as S from "./styles";
 
 interface Props extends TouchableOpacityProps {
-  type: 'up' | 'down';
+  type: "up" | "down";
   title: string;
   isActive: boolean;
 }
 
 const icons = {
-  up: 'arrow-up-circle',
-  down: 'arrow-down-circle',
+  up: "arrow-up-circle",
+  down: "arrow-down-circle",
 };
 
 export const TransactionTypeButton = ({
